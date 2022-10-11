@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 requests = "*"
+python-dotenv = "*"
+dataclasses = "*"
+urllib3 = "*"
 
 [dev-packages]
 autopep8 = "*"
