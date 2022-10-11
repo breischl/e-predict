@@ -8,10 +8,14 @@ requests = "*"
 python-dotenv = "*"
 dataclasses = "*"
 urllib3 = "*"
+flake8 = "*"
+pylint = "*"
 
 [dev-packages]
 autopep8 = "*"
 responses = "*"
+pylint = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.10"

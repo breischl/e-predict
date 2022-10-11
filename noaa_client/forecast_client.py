@@ -1,7 +1,8 @@
-from typing import Optional
-import requests
-from noaa_client.point_info import PointInfo
 from urllib.parse import quote
+
+import requests
+
+from noaa_client.point_info import PointInfo
 
 
 class ForecastClient:
@@ -14,7 +15,10 @@ class ForecastClient:
         """Create a new ForecastClient.
 
         Args:
-            user_agent: user_agent header value sent with requests to NOAA. Should include app name and admin email. eg (my-app, some-admin@example.com)
+            user_agent:
+                user_agent header value sent with requests to NOAA.
+                Should include app name and admin email.
+                eg (my-app, some-admin@example.com)
 
         Raises:
             ValueError: user_agent was not provided or was falsey
@@ -28,18 +32,25 @@ class ForecastClient:
             "Accept": "application/geo+json"
         }
 
-    def points(self, latitude, longitude) -> PointInfo:
+    def points(self, latitude: any, longitude: any) -> PointInfo:
+        """Get information about a particular map/geo point from NOAA
+
+        Args:
+            latitude: Latitude given as either a float or a string
+            longitude: Longitude gives as either a float or a string
+        """
         quoted_lat_long = quote(f"{latitude},{longitude}")
         url = f"{self.base_url}/points/{quoted_lat_long}"
-        resp = requests.get(url, headers=self.headers)
+        resp = requests.get(url, headers=self.headers, timeout=120)
         resp.raise_for_status()
 
         json = resp.json()
         props = json["properties"]
+        coords = props["relativeLocation"]["geometry"]["coordinates"]
         return PointInfo(id=props["@id"],
-                         latitude=props["relativeLocation"]["geometry"]["coordinates"][1],
-                         longitude=props["relativeLocation"]["geometry"]["coordinates"][0],
-                         gridId=props["gridId"],
-                         gridX=props["gridX"],
-                         gridY=props["gridY"]
+                         latitude=coords[1],
+                         longitude=coords[0],
+                         grid_id=props["gridId"],
+                         grid_x=props["gridX"],
+                         grid_y=props["gridY"]
                          )

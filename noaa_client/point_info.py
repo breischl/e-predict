@@ -4,9 +4,9 @@ from dataclasses import dataclass
 @dataclass
 class PointInfo:
     """Information returned from the NOAA /points API endpoint"""
-    id: str
+    id: str  # pylint: disable=invalid-name
     latitude: float
     longitude: float
-    gridId: str
-    gridX: int
-    gridY: int
+    grid_id: str
+    grid_x: int
+    grid_y: int
