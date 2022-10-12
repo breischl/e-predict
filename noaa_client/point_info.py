@@ -20,6 +20,7 @@ class PointInfo:
 
 
 def parse(json: dict, meta: NoaaMetadata) -> PointInfo:
+    """Parse a PointInfo from a response"""
     props = json["properties"]
     coords = props["relativeLocation"]["geometry"]["coordinates"]
 

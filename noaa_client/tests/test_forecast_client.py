@@ -4,11 +4,12 @@ import unittest
 
 import responses
 from dotenv import load_dotenv
-from noaa_client.forecast_client import ForecastClient
 from responses import _recorder
-
+from noaa_client.forecast_client import ForecastClient
 
 # pylint: disable=missing-class-docstring,missing-function-docstring
+
+
 class TestForecastClient(unittest.TestCase):
     def setUp(self) -> None:
         load_dotenv()
