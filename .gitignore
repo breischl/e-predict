@@ -1,3 +1,6 @@
+# Recorded test responses
+**/recorded_responses
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

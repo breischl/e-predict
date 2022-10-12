@@ -1,5 +1,7 @@
 import os
 import unittest
+import responses
+from responses import _recorder
 
 from dotenv import load_dotenv
 
@@ -13,7 +15,9 @@ class TestForecastClient(unittest.TestCase):
         self.client = ForecastClient(
             user_agent=os.environ.get("NOAA_USER_AGENT"))
 
-    def test_points(self) -> None:
+    @_recorder.record(file_path="noaa_client/tests/test_responses/testfile.toml")
+    def test_points_integration(self) -> None:
+        """Integration test that hits the live NOAA endpoint"""
         point_info = self.client.points("40.242056", "-104.819259")
         self.assertEqual(
             point_info.id, "https://api.weather.gov/points/40.2421,-104.8193")
@@ -22,3 +26,8 @@ class TestForecastClient(unittest.TestCase):
         self.assertEqual(point_info.longitude, -104.824077)
         self.assertEqual(point_info.grid_x, 70)
         self.assertEqual(point_info.grid_y, 83)
+
+    @responses.activate
+    def test_request_serialization(self) -> None:
+
+        NotImplemented
