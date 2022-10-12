@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 import requests
 
 from noaa_client.point_info import PointInfo
@@ -39,8 +37,7 @@ class ForecastClient:
             latitude: Latitude given as either a float or a string
             longitude: Longitude gives as either a float or a string
         """
-        quoted_lat_long = quote(f"{latitude},{longitude}")
-        url = f"{self.base_url}/points/{quoted_lat_long}"
+        url = f"{self.base_url}/points/{latitude},{longitude}"
         resp = requests.get(url, headers=self.headers, timeout=120)
         resp.raise_for_status()
 
