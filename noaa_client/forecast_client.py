@@ -1,6 +1,8 @@
 import requests
 
+from noaa_client.noaa_metadata import parse as parse_metadata
 from noaa_client.point_info import PointInfo
+from noaa_client.point_info import parse as parse_point_info
 
 
 class ForecastClient:
@@ -41,13 +43,6 @@ class ForecastClient:
         resp = requests.get(url, headers=self.headers, timeout=120)
         resp.raise_for_status()
 
+        meta = parse_metadata(resp.headers)
         json = resp.json()
-        props = json["properties"]
-        coords = props["relativeLocation"]["geometry"]["coordinates"]
-        return PointInfo(id=props["@id"],
-                         latitude=coords[1],
-                         longitude=coords[0],
-                         grid_id=props["gridId"],
-                         grid_x=props["gridX"],
-                         grid_y=props["gridY"]
-                         )
+        return parse_point_info(json, meta)

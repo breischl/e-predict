@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from noaa_client.noaa_metadata import NoaaMetadata
+
 
 @dataclass
 class PointInfo:
@@ -14,3 +16,18 @@ class PointInfo:
     grid_id: str
     grid_x: int
     grid_y: int
+    metadata: NoaaMetadata
+
+
+def parse(json: dict, meta: NoaaMetadata) -> PointInfo:
+    props = json["properties"]
+    coords = props["relativeLocation"]["geometry"]["coordinates"]
+
+    return PointInfo(id=props["@id"],
+                     latitude=coords[1],
+                     longitude=coords[0],
+                     grid_id=props["gridId"],
+                     grid_x=props["gridX"],
+                     grid_y=props["gridY"],
+                     metadata=meta
+                     )

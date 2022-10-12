@@ -29,24 +29,28 @@ class TestForecastClient(unittest.TestCase):
         self.assertEqual(point_info.longitude, -104.824077)
         self.assertEqual(point_info.grid_x, 70)
         self.assertEqual(point_info.grid_y, 83)
+        self.assertIsNot(point_info.metadata.correlation_id, "")
+        self.assertIsNot(point_info.metadata.request_id, "")
+        self.assertIsNot(point_info.metadata.server_id, "")
 
     @responses.activate
     def test_request_fields_and_parsing(self) -> None:
         """Test that request URL escaping and headers are correct. Also basic response parsing."""
         url_re = re.compile(re.escape("https://api.weather.gov/points/") + ".*")
-        _ = responses.get(url_re, json={
+        rsp = responses.get(url_re, json={
             "properties": {
                 "@id": "https://api.weather.gov/points/40.2421,-104.8193",
                 "gridId": "BOU",
                 "gridX": 70,
                 "gridY": 83,
                 "relativeLocation":
-                {"geometry": {
-                    "coordinates": [-104.824077,
-                                    40.216683000000003]
-                }}
+                    {"geometry": {
+                        "coordinates": [-104.824077,
+                                        40.216683000000003]
+                    }}
             }
-        })
+        },
+            headers={"X-Correlation-ID": "foo", "X-Request-ID": "bar", "X-Server-ID": "baz", "X-Edge-Request-ID": "bloofer"})
 
         point_info = self.client.points("40.242056", "-104.819259")
 
@@ -62,3 +66,7 @@ class TestForecastClient(unittest.TestCase):
         self.assertEqual(point_info.longitude, -104.824077)
         self.assertEqual(point_info.grid_x, 70)
         self.assertEqual(point_info.grid_y, 83)
+        self.assertEqual(point_info.metadata.request_id, rsp.headers["X-Request-ID"])
+        self.assertEqual(point_info.metadata.correlation_id, rsp.headers["X-Correlation-ID"])
+        self.assertEqual(point_info.metadata.server_id, rsp.headers["X-Server-ID"])
+        self.assertEqual(point_info.metadata.edge_request_id, rsp.headers["X-Edge-Request-ID"])
