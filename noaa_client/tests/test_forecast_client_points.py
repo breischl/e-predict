@@ -10,7 +10,7 @@ from noaa_client.forecast_client import ForecastClient
 # pylint: disable=missing-class-docstring,missing-function-docstring
 
 
-class TestForecastClient(unittest.TestCase):
+class TestForecastClientPoints(unittest.TestCase):
     def setUp(self) -> None:
         load_dotenv()
         self.client = ForecastClient(

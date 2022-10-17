@@ -2,33 +2,36 @@ from dataclasses import dataclass
 
 from noaa_client.noaa_metadata import NoaaMetadata
 
+# pylint: disable=missing-function-docstring
+
 
 @dataclass
 class PointInfo:
-    """Information returned from the NOAA /points API endpoint
+    """Information returned from the NOAA /points API endpoint"""
 
-    Currently this is just a subset of the available information. See
-    https://www.weather.gov/documentation/services-web-api#/default/point for more
-    """
-    id: str  # pylint: disable=invalid-name
-    latitude: float
-    longitude: float
-    grid_id: str
-    grid_x: int
-    grid_y: int
+    json: dict
     metadata: NoaaMetadata
 
+    @property
+    def id(self) -> str:
+        return self.json["properties"]["@id"]
 
-def parse(json: dict, meta: NoaaMetadata) -> PointInfo:
-    """Parse a PointInfo from a response"""
-    props = json["properties"]
-    coords = props["relativeLocation"]["geometry"]["coordinates"]
+    @property
+    def latitude(self) -> float:
+        return self.json["properties"]["relativeLocation"]["geometry"]["coordinates"][1]
 
-    return PointInfo(id=props["@id"],
-                     latitude=coords[1],
-                     longitude=coords[0],
-                     grid_id=props["gridId"],
-                     grid_x=props["gridX"],
-                     grid_y=props["gridY"],
-                     metadata=meta
-                     )
+    @property
+    def longitude(self) -> float:
+        return self.json["properties"]["relativeLocation"]["geometry"]["coordinates"][0]
+
+    @property
+    def grid_id(self) -> str:
+        return self.json["properties"]["gridId"]
+
+    @property
+    def grid_x(self) -> int:
+        return self.json["properties"]["gridX"]
+
+    @property
+    def grid_y(self) -> int:
+        return self.json["properties"]["gridY"]
