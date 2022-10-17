@@ -66,21 +66,21 @@ class ForecastClient:
         meta = parse_metadata(resp.headers)
         return PointForecast(resp.json(), meta)
 
-    # def point_forecast_hourly(self, forecast_office_id: str, grid_x: int, grid_y: int, units: str = "si") -> list:
-    #     """Get the hourly forecast for a particular 2.5km grid square from NOAA
+    def point_forecast_hourly(self, forecast_office_id: str, grid_x: int, grid_y: int, units: str = "si") -> PointForecast:
+        """Get the hourly forecast for a particular 2.5km grid square from NOAA
 
-    #     This is based on the `/gridpoints/{wfo}/{x},{y}/forecast/hourly` endpoint from NOAA.
-    #     The arguments for this can be gotten for a lat/long via the `points(lat, long)` method
+        This is based on the `/gridpoints/{wfo}/{x},{y}/forecast/hourly` endpoint from NOAA.
+        The arguments for this can be gotten for a lat/long via the `points(lat, long)` method
 
-    #     Args:
-    #         forecast_office_id: The 3-character weather forecast office identifier
-    #         grid_x: The X offset within the forecast office's grid
-    #         grid_y: the Y offset within the forecast offfice's grid
-    #         units (str, optional): What measurement system to request. Default is SI. Possible values are ["si", "us"]
-    #     """
-    #     url = f"{self.base_url}/gridpoints/{forecast_office_id}/{grid_x},{grid_y}/forecast/hourly"
-    #     resp = requests.get(url, headers=self.headers, timeout=120)
-    #     resp.raise_for_status()
+        Args:
+            forecast_office_id: The 3-character weather forecast office identifier
+            grid_x: The X offset within the forecast office's grid
+            grid_y: the Y offset within the forecast offfice's grid
+            units (str, optional): What measurement system to request. Default is SI. Possible values are ["si", "us"]
+        """
+        url = f"{self.base_url}/gridpoints/{forecast_office_id}/{grid_x},{grid_y}/forecast/hourly"
+        resp = requests.get(url, params={"units": units}, headers=self.headers, timeout=120)
+        resp.raise_for_status()
 
-    #     meta = parse_metadata(resp.headers)
-    #     return PointForecastHourly(resp.json(), meta)
+        meta = parse_metadata(resp.headers)
+        return PointForecast(resp.json(), meta)

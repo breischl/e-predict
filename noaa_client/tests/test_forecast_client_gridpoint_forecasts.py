@@ -27,6 +27,17 @@ class TestForecastClientGridpointForecasts(unittest.TestCase):
         self.assertIsNotNone(forecast.meta)
         self.assertTrue(forecast.periods)
 
+    # skipped unless requested to avoid spamming NOAA
+    # Run from Powershell like this:     $env:REMOTE_API_TEST="true" ; python -m unittest
+    @unittest.skipUnless(os.environ.get("REMOTE_API_TEST"), "Integration test meant to run manually")
+    @_recorder.record(file_path="noaa_client/tests/recorded_responses/test_gridpoint_forecast_hourly_integration.toml")
+    def test_gridpoint_forecast_hourly_integration(self) -> None:
+        """Integration test that hits the live NOAA endpoint"""
+        forecast = self.client.point_forecast_hourly("BOU", 70, 83)
+        self.assertIsNotNone(forecast.json)
+        self.assertIsNotNone(forecast.meta)
+        self.assertTrue(forecast.periods)
+
     @responses.activate
     def test_request_fields_and_parsing(self) -> None:
         """Test that request URL escaping and headers are correct. Also basic response parsing."""
