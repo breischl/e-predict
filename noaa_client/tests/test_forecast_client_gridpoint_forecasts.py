@@ -50,5 +50,6 @@ class TestForecastClientGridpointForecasts(unittest.TestCase):
             self.assertTrue(period.start_time < period.end_time)
             self.assertGreaterEqual(period.temperature, 0)
 
-        self.assertTrue(forecast.periods[0].is_day_time)
-        self.assertFalse(forecast.periods[1].is_day_time)
+        periods = list(forecast.periods)
+        self.assertTrue(periods[0].is_day_time)
+        self.assertFalse(periods[1].is_day_time)

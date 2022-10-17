@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Iterator
 
 from noaa_client.noaa_metadata import NoaaMetadata
 
@@ -52,9 +53,10 @@ class PointForecast:
     """Response metadata from NOAA"""
 
     @ property
-    def periods(self) -> list[ForecastPeriod]:
+    def periods(self) -> Iterator[ForecastPeriod]:
         """The set of forecast periods"""
-        return [ForecastPeriod(fp) for fp in self.json["properties"]["periods"]]
+        for period in self.json["properties"]["periods"]:
+            yield ForecastPeriod(period)
 
     @ property
     def updated(self) -> datetime:
