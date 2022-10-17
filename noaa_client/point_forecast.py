@@ -55,8 +55,7 @@ class PointForecast:
     @ property
     def periods(self) -> Iterator[ForecastPeriod]:
         """The set of forecast periods"""
-        for period in self.json["properties"]["periods"]:
-            yield ForecastPeriod(period)
+        return (ForecastPeriod(period) for period in self.json["properties"]["periods"])
 
     @ property
     def updated(self) -> datetime:
