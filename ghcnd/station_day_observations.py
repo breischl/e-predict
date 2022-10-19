@@ -16,30 +16,30 @@ class StationDayObservations:
 
 def parse_from_dly_text(dly_text: str) -> list[StationDayObservations]:
     """Parse observation from a .dly text file"""
-    observations: list[StationDayObservations] = list()
-    obs_year = 0
-    obs_month = 0
-    month_observations = {}
+    observations: dict[date, StationDayObservations] = {}
+
+    desired_measures = set(["TMAX", "TMIN"])
+
     for line in dly_text.splitlines():
-        # TODO: We're wasting effort parsing out observations that we'll just throw away
-        (new_year, new_month, elem, day_observations) = parse_from_dly_line(line)
-        if new_year != obs_year or new_month != obs_month:
-            if month_observations:
-                for (day_ord, (tmax, tmin)) in enumerate(zip(month_observations["TMAX"], month_observations["TMIN"])):
-                    day = date(obs_year, obs_month, day_ord + 1)
-                    day_obs = StationDayObservations(day, tmax, tmin)
-                    observations.append(day_obs)
-            month_observations.clear()
-            obs_year = new_year
-            obs_month = new_month
+        (year, month, elem, day_observations_values) = parse_from_dly_line(line, desired_measures)
+        if elem not in desired_measures:
+            continue
 
-        month_observations[elem] = day_observations
-    month_observations[elem] = day_observations
+        for (day_ord, observation_value) in enumerate(day_observations_values):
+            dt = date(year, month, day_ord + 1)
+            day_obs = observations.get(dt, StationDayObservations(dt, None, None))
 
-    return observations
+            if elem == "TMAX":
+                day_obs.temp_max = observation_value
+            elif elem == "TMIN":
+                day_obs.temp_min = observation_value
+
+            observations[day_obs.date] = day_obs
+
+    return sorted(observations.values(), key=lambda obs: obs.date)
 
 
-def parse_from_dly_line(dly_line: str) -> Tuple[int, int, str, list[int]]:
+def parse_from_dly_line(dly_line: str, desired_measures: set[str]) -> Tuple[int, int, str, list[int]]:
     """Parse a month of StationDayObervations from a line in a GHCN .dly file
 
     Each line contains a month of data, hence this method returns a list, with one object for each day.
@@ -77,6 +77,11 @@ def parse_from_dly_line(dly_line: str) -> Tuple[int, int, str, list[int]]:
     month = int(dly_line[15:17])
     (_, last_day_of_month) = calendar.monthrange(year, month)
     element = dly_line[17:21]
+
+    # quick exit if we don't care about this measurement
+    if element not in desired_measures:
+        return (year, month, element, None)
+
     measurements: list[int] = list()
     for day_idx in range(0, last_day_of_month):
         start_idx = (day_idx * 8) + 22
