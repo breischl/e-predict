@@ -10,12 +10,15 @@ dataclasses = "*"
 urllib3 = "*"
 flake8 = "*"
 pylint = "*"
+pandas = "*"
+numpy = "*"
 
 [dev-packages]
 autopep8 = "*"
 pylint = "*"
 flake8 = "*"
 responses = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.10"
