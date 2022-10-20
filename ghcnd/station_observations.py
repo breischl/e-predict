@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import calendar
-from datetime import date, datetime
+from dataclasses import dataclass
+from datetime import date
 from typing import Tuple
 
 
@@ -13,15 +13,52 @@ class StationDayObservations:
     temp_min: int
     """Min temperature in tenths-of-a-degree C"""
 
+    @property
+    def is_empty(self) -> bool:
+        """Indicates if all observation values for this day are None"""
+        return (self.temp_max is None and self.temp_min is None)
 
-def parse_from_dly_text(dly_text: str) -> list[StationDayObservations]:
-    """Parse observation from a .dly text file"""
+
+@dataclass
+class StationObservations:
+    """A set of observations for a station"""
+    station_id: str
+    """Station ID"""
+    observations: list[StationDayObservations]
+
+    @property
+    def start_date(self) -> date:
+        """First date of observations"""
+        return self.observations[0].date
+
+    @property
+    def end_date(self) -> date:
+        """Last date of observations"""
+        return self.observations[-1].date
+
+
+def read_from_dly_file(dly_file_path: str) -> StationObservations:
+    """Parse StationObservations from a .dly text file"""
+    with open(dly_file_path, "r", encoding="utf-8") as f:
+        return parse_from_dly_text(f.read())
+
+
+def parse_from_dly_text(dly_text: str) -> StationObservations:
+    """Parse StationObservations from a .dly text string
+
+    The returned observations will be sorted in date order. Days with no valid observations will be trimmed from the end only.
+    There may still be days with no observations in the middle of the date range, as long as there is at least one valid day afterwards.
+    """
     observations: dict[date, StationDayObservations] = {}
 
     desired_measures = set(["TMAX", "TMIN"])
+    station_id: str = None
 
     for line in dly_text.splitlines():
-        (year, month, elem, day_observations_values) = parse_from_dly_line(line, desired_measures)
+        if not station_id:
+            station_id = line[0:11]
+
+        (year, month, elem, day_observations_values) = _parse_from_dly_line(line, desired_measures)
         if elem not in desired_measures:
             continue
 
@@ -36,10 +73,18 @@ def parse_from_dly_text(dly_text: str) -> list[StationDayObservations]:
 
             observations[day_obs.date] = day_obs
 
-    return sorted(observations.values(), key=lambda obs: obs.date)
+    sorted_obs = sorted(observations.values(), key=lambda obs: obs.date)
+
+    # Strip fully-empty observations from the end of the list.
+    # This almost always happens because each line is a full month of data, but we're almost always retrieving it
+    # partway through the month, so the remaining days in the current month are null
+    while sorted_obs[-1].is_empty:
+        sorted_obs.pop()
+
+    return StationObservations(station_id, sorted_obs)
 
 
-def parse_from_dly_line(dly_line: str, desired_measures: set[str]) -> Tuple[int, int, str, list[int]]:
+def _parse_from_dly_line(dly_line: str, desired_measures: set[str]) -> Tuple[int, int, str, list[int]]:
     """Parse a month of StationDayObervations from a line in a GHCN .dly file
 
     Each line contains a month of data, hence this method returns a list, with one object for each day.
@@ -73,21 +118,22 @@ def parse_from_dly_line(dly_line: str, desired_measures: set[str]) -> Tuple[int,
     ------------------------------
     """
 
+    element = dly_line[17:21]
+    if element not in desired_measures:
+        # We don't care about this measurement
+        return (None, None, element, None)
+
     year = int(dly_line[11:15])
     month = int(dly_line[15:17])
-    (_, last_day_of_month) = calendar.monthrange(year, month)
-    element = dly_line[17:21]
 
-    # quick exit if we don't care about this measurement
-    if element not in desired_measures:
-        return (year, month, element, None)
+    (_, last_day_of_month) = calendar.monthrange(year, month)
 
     measurements: list[int] = list()
     for day_idx in range(0, last_day_of_month):
-        start_idx = (day_idx * 8) + 22
+        start_idx = (day_idx * 8) + 21
 
         # Extract measurement, note we're skipping the flags
-        raw_measurement = dly_line[start_idx:start_idx + 4]
+        raw_measurement = dly_line[start_idx:start_idx + 5]
         parsed_measure = int(raw_measurement)
         if parsed_measure == -9999:  # Special value indicating missing data
             parsed_measure = None
