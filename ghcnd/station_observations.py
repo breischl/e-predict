@@ -1,6 +1,7 @@
 import calendar
 from dataclasses import dataclass
 from datetime import date
+from math import nan as NaN
 from typing import Tuple
 
 
@@ -8,15 +9,25 @@ from typing import Tuple
 class StationDayObservations:
     """A single day worth of weather observations for a single GHCN-d station"""
     date: date
-    temp_max: int
+    tmax: int
     """Max temperature in tenths-of-a-degree C"""
-    temp_min: int
+    tmin: int
     """Min temperature in tenths-of-a-degree C"""
 
     @property
+    def tmax_decimal(self) -> float:
+        """tmin converted to decimal degrees (ie, the normal way you see temps represented)"""
+        return self.tmax / 10.0
+
+    @property
+    def tmin_decimal(self) -> float:
+        """tmin converted to decimal degrees (ie, the normal way you see temps represented)"""
+        return self.tmin / 10.0
+
+    @property
     def is_empty(self) -> bool:
-        """Indicates if all observation values for this day are None"""
-        return (self.temp_max is None and self.temp_min is None)
+        """Indicates if all observation values for this day are None/NaN"""
+        return (self.tmax is NaN and self.tmin is NaN)
 
 
 @dataclass
@@ -69,9 +80,9 @@ def parse_from_dly_text(dly_text: str, desired_measurements: set[str], start_dat
             day_obs = observations.get(dt, StationDayObservations(dt, None, None))
 
             if elem == "TMAX":
-                day_obs.temp_max = observation_value
+                day_obs.tmax = observation_value
             elif elem == "TMIN":
-                day_obs.temp_min = observation_value
+                day_obs.tmin = observation_value
 
             observations[day_obs.date] = day_obs
 
@@ -138,7 +149,7 @@ def _parse_from_dly_line(dly_line: str, desired_measures: set[str]) -> Tuple[int
         raw_measurement = dly_line[start_idx:start_idx + 5]
         parsed_measure = int(raw_measurement)
         if parsed_measure == -9999:  # Special value indicating missing data
-            parsed_measure = None
+            parsed_measure = NaN
         measurements.append(parsed_measure)
 
     return (year, month, element, measurements)
