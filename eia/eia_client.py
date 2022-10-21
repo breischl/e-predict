@@ -1,10 +1,9 @@
 """A dead-simple wrapper around the one EIA OpenData endpoint we use"""
+import datetime
 import os
 from dataclasses import dataclass
-import datetime
 from datetime import date
 
-import dotenv
 import requests
 
 
@@ -24,7 +23,6 @@ def get_electric_demand_hourly(start: date, end: date, respondent: str = "PSCO")
 
     Based on the EIA OpenData https://api.eia.gov/v2/electricity/rto/region-data/data endpoint"""
 
-    dotenv.load_dotenv()
     api_key = os.environ.get("EIA_TOKEN")
 
     URL = "https://api.eia.gov/v2/electricity/rto/region-data/data"
@@ -43,7 +41,7 @@ def get_electric_demand_hourly(start: date, end: date, respondent: str = "PSCO")
 
     demand_days: list[DailyDemand] = list()
     for row in data:
-        dt = datetime.datetime.strptime("2021-01-01T12", "%Y-%m-%dT%H")
+        dt = datetime.datetime.strptime(row["period"], "%Y-%m-%dT%H")
         demand_days.append(DailyDemand(date=dt.date(), hour=dt.hour, demand=row["value"]))
 
     return demand_days
