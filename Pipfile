@@ -12,6 +12,7 @@ flake8 = "*"
 pylint = "*"
 pandas = "*"
 numpy = "*"
+matplotlib = "*"
 
 [dev-packages]
 autopep8 = "*"
