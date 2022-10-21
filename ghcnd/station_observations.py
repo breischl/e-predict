@@ -37,13 +37,13 @@ class StationObservations:
         return self.observations[-1].date
 
 
-def read_from_dly_file(dly_file_path: str) -> StationObservations:
+def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = set(["TMAX", "TMIN"]), start_date: date = date(2015, 1, 1)) -> StationObservations:
     """Parse StationObservations from a .dly text file"""
     with open(dly_file_path, "r", encoding="utf-8") as f:
-        return parse_from_dly_text(f.read())
+        return parse_from_dly_text(f.read(), desired_measurements, start_date)
 
 
-def parse_from_dly_text(dly_text: str) -> StationObservations:
+def parse_from_dly_text(dly_text: str, desired_measurements: set[str], start_date: date) -> StationObservations:
     """Parse StationObservations from a .dly text string
 
     The returned observations will be sorted in date order. Days with no valid observations will be trimmed from the end only.
@@ -51,19 +51,21 @@ def parse_from_dly_text(dly_text: str) -> StationObservations:
     """
     observations: dict[date, StationDayObservations] = {}
 
-    desired_measures = set(["TMAX", "TMIN"])
     station_id: str = None
 
     for line in dly_text.splitlines():
         if not station_id:
             station_id = line[0:11]
 
-        (year, month, elem, day_observations_values) = _parse_from_dly_line(line, desired_measures)
-        if elem not in desired_measures:
+        (year, month, elem, day_observations_values) = _parse_from_dly_line(line, desired_measurements)
+        if elem not in desired_measurements:
             continue
 
         for (day_ord, observation_value) in enumerate(day_observations_values):
             dt = date(year, month, day_ord + 1)
+            if dt < start_date:
+                continue
+
             day_obs = observations.get(dt, StationDayObservations(dt, None, None))
 
             if elem == "TMAX":
