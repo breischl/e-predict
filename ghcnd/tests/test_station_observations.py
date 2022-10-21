@@ -1,7 +1,6 @@
 import os
 import unittest
 from datetime import date
-from math import nan as NaN
 from math import isnan
 
 from ghcnd.station_observations import read_from_dly_file

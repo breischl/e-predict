@@ -48,7 +48,7 @@ class StationObservations:
         return self.observations[-1].date
 
 
-def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = set(["TMAX", "TMIN"]), start_date: date = date(2015, 1, 1)) -> StationObservations:
+def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = frozenset(["TMAX", "TMIN"]), start_date: date = date(2015, 1, 1)) -> StationObservations:
     """Parse StationObservations from a .dly text file"""
     with open(dly_file_path, "r", encoding="utf-8") as f:
         return parse_from_dly_text(f.read(), desired_measurements, start_date)

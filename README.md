@@ -5,10 +5,12 @@ Public Service Company of Colorado (PSCO, basically XCel Energy's footprint in C
 ## Status
 Very much in development. As seems to be standard for ML projects, acquiring training data is taking quite a while. 
 
-I've identified data sources (see below) and have coded up a client library for one (in the `noaa_client` package). 
+Thus far I have:
+ - identified data sources (see below)
+ - written a client library to retrieve weather forecasts from NOAA/weather.gov, in the `noaa_client` package.
+ - written download and parsing code to retrieve historical weather data from GHCN-D in the `ghcnd` package.
 
-My next step is figuring out how to use the GHCN-d data. This will involve figuring out which weather stations to use for data sources,
-and writing any necessary parsing code.
+My next step is writing a client for EIA OpenData to get daily electric usage data.
 
 ## Data Sources
 I have identified three data sources that I believe will get me sufficient information.
