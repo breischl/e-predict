@@ -6,13 +6,13 @@ name = "pypi"
 [packages]
 requests = "*"
 python-dotenv = "*"
-dataclasses = "*"
 urllib3 = "*"
 flake8 = "*"
 pylint = "*"
 pandas = "*"
 numpy = "*"
 matplotlib = "*"
+json-encoder = "*"
 
 [dev-packages]
 autopep8 = "*"

@@ -1,6 +1,6 @@
 import os
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 import dotenv
 
@@ -19,6 +19,6 @@ class TestEiaClient(unittest.TestCase):
 
         self.assertIsNotNone(daily_demand)
         self.assertEqual(25, len(daily_demand))
-        self.assertEqual(0, daily_demand[0].hour)
-        self.assertEqual(date(2022, 1, 1), daily_demand[0].date)
+        self.assertEqual(0, daily_demand[0].date.hour)
+        self.assertEqual(datetime(2022, 1, 1, 0), daily_demand[0].date)
         self.assertEqual(6427, daily_demand[0].demand)

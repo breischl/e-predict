@@ -1,6 +1,6 @@
 # Recorded test responses
 **/recorded_responses
-/ghcnd/station_data
+/historical_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -5,20 +5,33 @@ from dataclasses import dataclass
 from datetime import date
 
 import requests
+from json_encoder.json import json_encoder
 
 
 @dataclass
-class DailyDemand:
+class HourlyDemand():
+
     """A single day of demand """
-    date: date
+    date: datetime
     """"""
-    hour: int
-    """Hour of day for data in question"""
     demand: int
     """Electric demand in megawatt-hours"""
 
+    def to_dict(self) -> dict:
+        """Convert object to a dictionary"""
+        return {
+            "date": self.date.isoformat(),
+            "demand": self.demand
+        }
 
-def get_electric_demand_hourly(start: date, end: date, respondent: str = "PSCO") -> list[DailyDemand]:
+
+@json_encoder.register(HourlyDemand)
+def encode_hourlydemand(obj):
+    """Encoding function for use with json-encoder library"""
+    return obj.to_dict()
+
+
+def get_electric_demand_hourly(start: date, end: date, respondent: str = "PSCO") -> list[HourlyDemand]:
     """Get hourly electric demand for a particular date range and respondent
 
     Based on the EIA OpenData https://api.eia.gov/v2/electricity/rto/region-data/data endpoint"""
@@ -37,11 +50,13 @@ def get_electric_demand_hourly(start: date, end: date, respondent: str = "PSCO")
     }
     resp = requests.get(URL, params, timeout=120)
     json = resp.json()
+    resp.raise_for_status()
+
     data = json["response"]["data"]
 
-    demand_days: list[DailyDemand] = list()
+    demand_days: list[HourlyDemand] = list()
     for row in data:
         dt = datetime.datetime.strptime(row["period"], "%Y-%m-%dT%H")
-        demand_days.append(DailyDemand(date=dt.date(), hour=dt.hour, demand=row["value"]))
+        demand_days.append(HourlyDemand(date=dt, demand=row["value"]))
 
     return demand_days
