@@ -33,14 +33,14 @@ def encode_hourlydemand(obj):
 
 def get_electric_demand_hourly(start: date, end: date = None, respondent: str = "PSCO", results_per_request: int = 5000) -> list[HourlyDemand]:
     """Get hourly electric demand for a particular date range and respondent.
-    This will automatically perform pagination, so it may execute multiple requests under the covers. 
+    This will automatically perform pagination, so it may execute multiple requests under the covers.
     Based on the EIA OpenData API. See the /support/Electricity Production.md file for more documentation of the API
 
     Requires an environment variable "EIA_TOKEN" be set with a valid EIA OpenData API token.
 
     Args:
         start: earliest date of retrieved data
-        end: (optional) latest date of retrieved data. If None, then get all available data after `start` date. 
+        end: (optional) latest date of retrieved data. If None, then get all available data after `start` date.
         respondent: (optional, default "PSCO") the EIA respondent to retrieve data for
         max_results: (optional, default 5000) maximum number of data points to return per request
     """
@@ -49,7 +49,7 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
     if not api_key:
         raise ValueError("EIA_TOKEN environment variable not set")
 
-    URL = "https://api.eia.gov/v2/electricity/rto/region-data/data"
+    url = "https://api.eia.gov/v2/electricity/rto/region-data/data"
 
     params = {
         "data[]": "value",
@@ -65,12 +65,12 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
     if end:
         params["end"] = end
 
-    demand_days: list[HourlyDemand] = list()
+    demand_days: list[HourlyDemand] = []
     expected_result_count = 999_999_999
 
     while len(demand_days) < expected_result_count:
         print(f"Requesting EIA data from offset {params['offset']}")
-        resp = requests.get(URL, params, timeout=120)
+        resp = requests.get(url, params, timeout=120)
         resp.raise_for_status()
 
         json_resp = resp.json()["response"]
@@ -81,8 +81,8 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
             break
 
         for row in data:
-            dt = datetime.datetime.strptime(row["period"], "%Y-%m-%dT%H")
-            demand_days.append(HourlyDemand(date=dt, demand=row["value"]))
+            row_date = datetime.datetime.strptime(row["period"], "%Y-%m-%dT%H")
+            demand_days.append(HourlyDemand(date=row_date, demand=row["value"]))
 
         # Update pagination
         expected_result_count = json_resp["total"]
