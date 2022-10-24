@@ -3,7 +3,6 @@ import datetime
 import os
 from dataclasses import dataclass
 from datetime import date
-from logging import Logger
 
 import requests
 from json_encoder.json import json_encoder
@@ -46,8 +45,6 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
         max_results: (optional, default 5000) maximum number of data points to return per request
     """
 
-    logger = Logger(__name__)
-
     api_key = os.environ.get("EIA_TOKEN")
     if not api_key:
         raise ValueError("EIA_TOKEN environment variable not set")
@@ -72,7 +69,7 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
     expected_result_count = 999_999_999
 
     while len(demand_days) < expected_result_count:
-        logger.info("Requesting EIA data from offset %s", params['offset'])
+        print(f"Requesting EIA data from offset {params['offset']}")
         resp = requests.get(URL, params, timeout=120)
         resp.raise_for_status()
 
@@ -80,7 +77,7 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
 
         data = json_resp["data"]
         if not data:
-            logger.warning("Received no data from EIA, ending iteration")
+            print("Received no data from EIA, ending iteration")
             break
 
         for row in data:
@@ -91,6 +88,6 @@ def get_electric_demand_hourly(start: date, end: date = None, respondent: str = 
         expected_result_count = json_resp["total"]
         params["offset"] = params["offset"] + len(data)
 
-    logger.info("Finished requesting EIA data, retrieved %s data points", len(demand_days))
+    print(f"Finished requesting EIA data, retrieved {len(demand_days)} data points")
 
     return demand_days

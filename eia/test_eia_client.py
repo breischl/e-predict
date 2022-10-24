@@ -1,6 +1,6 @@
 import os
 import unittest
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 import dotenv
 
