@@ -1,6 +1,6 @@
 import os
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import dotenv
 
@@ -15,7 +15,8 @@ class TestEiaClient(unittest.TestCase):
     # Run from Powershell like this:     $env:REMOTE_API_TEST="true" ; python -m unittest
     @unittest.skipUnless(os.environ.get("REMOTE_API_TEST"), "Integration test meant to run manually")
     def test_eia_download(self) -> None:
-        daily_demand = eia.eia_client.get_electric_demand_hourly(date(2022, 1, 1), date(2022, 1, 2))
+        # Setting a very low results_per_request so we test pagination
+        daily_demand = eia.eia_client.get_electric_demand_hourly(date(2022, 1, 1), date(2022, 1, 2), results_per_request=10)
 
         self.assertIsNotNone(daily_demand)
         self.assertEqual(25, len(daily_demand))
