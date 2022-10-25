@@ -99,8 +99,8 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
 
         hist_temp_df = pd.DataFrame(obs.observations)
 
-        hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"])
-        hist_temp_df = hist_temp_df.assign(day_of_year=lambda x: x["date"].dt.day_of_year)
+        # hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"])
+        # hist_temp_df = hist_temp_df.assign(day_of_year=lambda x: x["date"].dt.day_of_year)
 
         hist_temp_df.set_index("date", inplace=True)
 
