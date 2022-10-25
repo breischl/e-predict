@@ -34,7 +34,7 @@ def cleanse_eia_data(electric_data_dir: str, eia_respondent: str = "PSCO"):
     """Clean up already-downloaded EIA data and save daily & hourly dataframe files"""
     print("Cleansing EIA data")
     eia_file = os.path.join(electric_data_dir, f"{eia_respondent}.json")
-    df = pd.read_json(eia_file, typ="frame", orient="records", convert_dates=["dates"])
+    df: pd.DataFrame = pd.read_json(eia_file, typ="frame", orient="records", convert_dates=["dates"])
     df.set_index("date", inplace=True)
 
     # print(demand_ds.describe())
@@ -132,6 +132,6 @@ if __name__ == "__main__":
 
     dotenv.load_dotenv()
 
-    #download_eia_historical_data(ELECTRIC_DATA_DIR, eia_respondent="PSCO")
+    download_eia_historical_data(ELECTRIC_DATA_DIR, eia_respondent="PSCO")
     cleanse_eia_data(ELECTRIC_DATA_DIR, eia_respondent="PSCO")
-    #download_ghcnd_historical_data(WEATHER_DATA_DIR, WEATHER_STATION_IDS)
+    download_ghcnd_historical_data(WEATHER_DATA_DIR, WEATHER_STATION_IDS)
