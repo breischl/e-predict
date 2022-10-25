@@ -30,6 +30,8 @@ def download_eia_historical_data(electric_data_dir: str, eia_respondent: str = "
     print("Completed downloading EIA demand data")
 
 
+# Pylint seems unable to figure out that we're getting back a DataFrame from the reader
+# pylint: disable=no-member
 def cleanse_eia_data(electric_data_dir: str, eia_respondent: str = "PSCO"):
     """Clean up already-downloaded EIA data and save daily & hourly dataframe files"""
     print("Cleansing EIA data")
@@ -99,16 +101,13 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
 
         hist_temp_df = pd.DataFrame(obs.observations)
 
-        # hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"])
-        # hist_temp_df = hist_temp_df.assign(day_of_year=lambda x: x["date"].dt.day_of_year)
-
+        hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"])
         hist_temp_df.set_index("date", inplace=True)
 
-        hist_temp_df = hist_temp_df.interpolate(method="time")
+        hist_temp_df["tmax"] = hist_temp_df["tmax"] / 10.0
+        hist_temp_df["tmin"] = hist_temp_df["tmin"] / 10.0
 
-        hist_temp_df = hist_temp_df.assign(
-            tmax_decimal=lambda x: x["tmax"] / 10.0,
-            tmin_decimal=lambda x: x["tmin"] / 10.0)
+        hist_temp_df = hist_temp_df.interpolate(method="time")
 
         df_file_path = os.path.join(weather_data_dir, f"{station_id}-dataframe.json")
         hist_temp_df.to_json(df_file_path)
