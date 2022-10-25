@@ -48,13 +48,17 @@ class StationObservations:
         return self.observations[-1].date
 
 
-def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = frozenset(["TMAX", "TMIN"]), start_date: date = date(2015, 1, 1)) -> StationObservations:
+DEFAULT_MEASUREMENTS: set[str] = frozenset(["TMAX", "TMIN"])
+DEFAULT_START_DATE: date = date(2015, 1, 1)
+
+
+def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS, start_date: date = DEFAULT_START_DATE) -> StationObservations:
     """Parse StationObservations from a .dly text file"""
     with open(dly_file_path, "r", encoding="utf-8") as f:
         return parse_from_dly_text(f.read(), desired_measurements, start_date)
 
 
-def parse_from_dly_text(dly_text: str, desired_measurements: set[str], start_date: date) -> StationObservations:
+def parse_from_dly_text(dly_text: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS, start_date: date = DEFAULT_START_DATE) -> StationObservations:
     """Parse StationObservations from a .dly text string
 
     The returned observations will be sorted in date order. Days with no valid observations will be trimmed from the end only.
