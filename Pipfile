@@ -13,11 +13,7 @@ pandas = "*"
 numpy = "*"
 matplotlib = "*"
 json-encoder = "*"
-
-[dev-packages]
 autopep8 = "*"
-pylint = "*"
-flake8 = "*"
 responses = "*"
 jupyter = "*"
 
