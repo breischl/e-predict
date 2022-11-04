@@ -16,6 +16,9 @@ json-encoder = "*"
 autopep8 = "*"
 responses = "*"
 jupyter = "*"
+sklearn = "*"
+fastai = "*"
+dtreeviz = "*"
 
 [requires]
 python_version = "3.10"
