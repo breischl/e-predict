@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "877f465ab49a44ca2f5f5ec61626a8e67e33472d830c84d5b299b9a802c014e6"
+            "sha256": "69add61ebe66b05fde8b51d50ac45281d9df086073d13cd57fcc0b781928b2dc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -452,11 +452,11 @@
         },
         "exceptiongroup": {
             "hashes": [
-                "sha256:2ac84b496be68464a2da60da518af3785fff8b7ec0d090a581604bc870bdee41",
-                "sha256:affbabf13fb6e98988c38d9c5650e701569fe3c1de3233cfb61c5f33774690ad"
+                "sha256:4d6c0aa6dd825810941c792f53d7b8d71da26f5e5f84f20f9508e8f2d33b140a",
+                "sha256:73866f7f842ede6cb1daa42c4af078e2035e5f7607f0e2c762cc51bb31bbe7b2"
             ],
             "markers": "python_version < '3.11'",
-            "version": "==1.0.0"
+            "version": "==1.0.1"
         },
         "executing": {
             "hashes": [
@@ -548,7 +548,7 @@
                 "sha256:301fdb487587c9bf277025001da97b53697aab73ae1268d9d1ba972a2c5fc801",
                 "sha256:e195cf6d8c3dd5d41f3cf8ad831d9891f95d7d18fa6d5fb4d30a713df99b26a4"
             ],
-            "markers": "python_version >= '3.8'",
+            "index": "pypi",
             "version": "==6.17.0"
         },
         "ipython": {
@@ -1648,7 +1648,7 @@
                 "sha256:f5d4231af7199531e77da1b78a4cc6b3d960a00b1ec672578ac818aae2b9c35d",
                 "sha256:fd3ee69d36d42a7dcbb17e355a5653af5fd241a7dfd9133080b3dde8d9e2aafb"
             ],
-            "markers": "python_version >= '3.8'",
+            "index": "pypi",
             "version": "==1.1.3"
         },
         "scipy": {
@@ -2052,11 +2052,11 @@
         },
         "websocket-client": {
             "hashes": [
-                "sha256:398909eb7e261f44b8f4bd474785b6ec5f5b499d4953342fe9755e01ef624090",
-                "sha256:f9611eb65c8241a67fb373bef040b3cf8ad377a9f6546a12b620b6511e8ea9ef"
+                "sha256:d6b06432f184438d99ac1f456eaf22fe1ade524c3dd16e661142dc54e9cba574",
+                "sha256:d6e8f90ca8e2dd4e8027c4561adeb9456b54044312dba655e7cae652ceb9ae59"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==1.4.1"
+            "version": "==1.4.2"
         },
         "widgetsnbextension": {
             "hashes": [

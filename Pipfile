@@ -19,6 +19,8 @@ jupyter = "*"
 sklearn = "*"
 fastai = "*"
 dtreeviz = "*"
+ipykernel = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.10"
