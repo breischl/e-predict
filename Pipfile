@@ -21,6 +21,9 @@ fastai = "*"
 dtreeviz = "*"
 ipykernel = "*"
 scikit-learn = "*"
+scipy = "*"
+treeinterpreter = "*"
+waterfallcharts = "*"
 
 [requires]
 python_version = "3.10"
