@@ -13,13 +13,17 @@ pandas = "*"
 numpy = "*"
 matplotlib = "*"
 json-encoder = "*"
-
-[dev-packages]
 autopep8 = "*"
-pylint = "*"
-flake8 = "*"
 responses = "*"
 jupyter = "*"
+sklearn = "*"
+fastai = "*"
+dtreeviz = "*"
+ipykernel = "*"
+scikit-learn = "*"
+scipy = "*"
+treeinterpreter = "*"
+waterfallcharts = "*"
 
 [requires]
 python_version = "3.10"

@@ -3,14 +3,14 @@ The goal of this project is to develop an ML model capable of forecasting daily 
 Public Service Company of Colorado (PSCO, basically XCel Energy's footprint in Colorado) territory, based on the forecast daily temperatures. 
 
 ## Status
-Very much in development. I'm currently working on analyzing the historical data. 
+In development. Currently working on how to build the actual ML model
 
 Thus far I have:
  - identified data sources (see below)
  - written a client library to retrieve weather forecasts from NOAA/weather.gov, in the `noaa_client` package.
  - written download and parsing code to retrieve historical weather data from GHCN-D in the `ghcnd` package.
  - written download and parsing code for the EIA OpenData historical electric demand data in the `eia` package.
- - Begun work on a Jupyter notebook (in `explore_temp_data.ipynb`) to analyze that data
+ - Done some data analysis & plotting in a Jupyter notebook,  `explore_temp_data.ipynb`.
 
 
 ## Data Sources

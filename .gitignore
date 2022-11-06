@@ -1,6 +1,7 @@
 # Recorded test responses
 **/recorded_responses
 /historical_data
+/analysis_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
