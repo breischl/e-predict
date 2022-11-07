@@ -39,24 +39,12 @@ def cleanse_eia_data(electric_data_dir: str, eia_respondent: str = "PSCO"):
     df: pd.DataFrame = pd.read_json(eia_file, typ="frame", orient="records", convert_dates=["dates"])
     df.set_index("date", inplace=True)
 
-    # print(demand_ds.describe())
-    # demand_ds.plot.hist()
-    # demand_ds.plot()
-
-    # calculate inter-quartile range
-    iqr = df.quantile(0.75, numeric_only=False) - df.quantile(0.25, numeric_only=False)
-
-    # Find values within `iqr_mult` multiples of the median
-    iqr_mult = 3
-    median = df.median()
-    min_demand = median - (iqr * iqr_mult)
-    max_demand = median + (iqr * iqr_mult)
-    print(f"inter-quartile range: {iqr['demand']}, median: {median['demand']}, valid data range: {min_demand['demand']} - {max_demand['demand']}")
-
-    valid_rows = np.abs((df - median) / iqr) < iqr_mult
+    # This is a dead-simple criterion, but it works better than what I found before.
+    # See `data_cleansing.ipynb` for how I came up with this
+    good_criterion = df['demand'].map(lambda d: d > 1000 and d < 11000)
 
     # replace outliers with nan, then interpolate those values
-    df = df.where(valid_rows, np.nan)
+    df = df.where(good_criterion, np.nan)
     df.interpolate(inplace=True)
 
     # Save the cleaned hourly dataframe
