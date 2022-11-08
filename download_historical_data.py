@@ -104,17 +104,28 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
     print("Finished downloading data")
 
 
-def read_weather_data(path_glob: str, earliest_date: str = "2015-01-01") -> pd.DataFrame:
+def read_weather_data_glob(path_glob: str, earliest_date: str = "2015-01-01") -> pd.DataFrame:
     """Read and parse weather data from saved JSON dataframes into an in-memory DF
 
     Args:
         path_glob: A wildcard string suitable to pass to `glob.glob()` to find the desired files
         earliest_date: String suitable for DataFrame indexing. The earliest date of data to return. None for no filtering.
     """
+    files = [f for f in glob.glob(path_glob)]
+    return read_weather_data(files, earliest_date=earliest_date)
+
+
+def read_weather_data(files: list[str], earliest_date: str = "2015-01-01") -> pd.DataFrame:
+    """Read and parse weather data from saved JSON dataframes into an in-memory DF
+
+    Args:
+        files: List of file paths to read
+        earliest_date: String suitable for DataFrame indexing. The earliest date of data to return. None for no filtering.
+    """
     temp_df: pd.DataFrame = None
 
     # Load up temperature data for each weather station, into their own columns
-    for df_file in glob.glob(path_glob):
+    for df_file in files:
         with open(df_file, "r", encoding="utf-8") as f:
             # print(f"Importing {df_file}")
             station_id = os.path.basename(df_file)[0:11]
