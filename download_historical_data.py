@@ -1,3 +1,4 @@
+import glob
 import os
 from datetime import date
 
@@ -89,7 +90,7 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
 
         hist_temp_df = pd.DataFrame(obs.observations)
 
-        hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"])
+        hist_temp_df["date"] = pd.to_datetime(hist_temp_df["date"], errors="raise")
         hist_temp_df.set_index("date", inplace=True)
 
         hist_temp_df["tmax"] = hist_temp_df["tmax"] / 10.0
@@ -98,9 +99,45 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
         hist_temp_df = hist_temp_df.interpolate(method="time")
 
         df_file_path = os.path.join(weather_data_dir, f"{station_id}-dataframe.json")
-        hist_temp_df.to_json(df_file_path)
+        hist_temp_df.to_json(df_file_path, date_unit="ms")
 
     print("Finished downloading data")
+
+
+def read_weather_data(path_glob: str, earliest_date: str = "2015-01-01") -> pd.DataFrame:
+    """Read and parse weather data from saved JSON dataframes into an in-memory DF
+
+    Args:
+        path_glob: A wildcard string suitable to pass to `glob.glob()` to find the desired files
+        earliest_date: String suitable for DataFrame indexing. The earliest date of data to return. None for no filtering.
+    """
+    temp_df: pd.DataFrame = None
+
+    # Load up temperature data for each weather station, into their own columns
+    for df_file in glob.glob(path_glob):
+        with open(df_file, "r", encoding="utf-8") as f:
+            # print(f"Importing {df_file}")
+            station_id = os.path.basename(df_file)[0:11]
+            station_df = pd.read_json(f)
+            station_df.index.rename("date", inplace=True)
+
+            # Apparently Pandas has a hard time reading it's own DataFrames back from JSON format?
+            station_df.index = pd.to_datetime(station_df.index, errors="raise", unit="ms")
+
+            # TODO: This name-mangling seems like a halfassed way to either do a MultiIndex or maybe a tuple-index
+            # Going to leave it for now as I'm not clear what will be easiest when trying to train an ML model
+            col_renames = {col: f"{station_id}_{col}" for col in station_df.columns}
+            station_df.rename(col_renames, axis="columns", inplace=True)
+
+            if temp_df is not None:
+                temp_df = pd.merge(left=temp_df, right=station_df, how="outer", left_index=True, right_index=True)
+            else:
+                temp_df = station_df
+
+    if earliest_date:
+        temp_df = temp_df[earliest_date:]
+
+    return temp_df
 
 
 if __name__ == "__main__":
