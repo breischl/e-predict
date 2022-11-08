@@ -65,6 +65,9 @@ def cleanse_eia_data(electric_data_dir: str, eia_respondent: str = "PSCO"):
     grouped.to_json(grouped_file_path)
 
 
+DATAFRAME_SUFFIX = "-dataframe.json"
+
+
 def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: list[str]):
     """Download and cleanse historical weather data from GHCND"""
     ghcnd_base_url = "https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/all"
@@ -98,37 +101,27 @@ def download_ghcnd_historical_data(weather_data_dir: str, weather_station_ids: l
 
         hist_temp_df = hist_temp_df.interpolate(method="time")
 
-        df_file_path = os.path.join(weather_data_dir, f"{station_id}-dataframe.json")
+        df_file_path = os.path.join(weather_data_dir, f"{station_id}{DATAFRAME_SUFFIX}")
         hist_temp_df.to_json(df_file_path, date_unit="ms")
 
     print("Finished downloading data")
 
 
-def read_weather_data_glob(path_glob: str, earliest_date: str = "2015-01-01") -> pd.DataFrame:
+def read_weather_data(weather_data_dir: str, station_ids: list[str], earliest_date: str = "2015-01-01") -> pd.DataFrame:
     """Read and parse weather data from saved JSON dataframes into an in-memory DF
 
     Args:
-        path_glob: A wildcard string suitable to pass to `glob.glob()` to find the desired files
-        earliest_date: String suitable for DataFrame indexing. The earliest date of data to return. None for no filtering.
-    """
-    files = [f for f in glob.glob(path_glob)]
-    return read_weather_data(files, earliest_date=earliest_date)
-
-
-def read_weather_data(files: list[str], earliest_date: str = "2015-01-01") -> pd.DataFrame:
-    """Read and parse weather data from saved JSON dataframes into an in-memory DF
-
-    Args:
-        files: List of file paths to read
+        weather_data_dir: Directory containing all the weather data files
+        station_ids: List of file paths to read
         earliest_date: String suitable for DataFrame indexing. The earliest date of data to return. None for no filtering.
     """
     temp_df: pd.DataFrame = None
 
     # Load up temperature data for each weather station, into their own columns
-    for df_file in files:
+    for station_id in station_ids:
+        df_file = os.path.join(weather_data_dir, f"{station_id}{DATAFRAME_SUFFIX}")
         with open(df_file, "r", encoding="utf-8") as f:
             # print(f"Importing {df_file}")
-            station_id = os.path.basename(df_file)[0:11]
             station_df = pd.read_json(f)
             station_df.index.rename("date", inplace=True)
 
@@ -162,7 +155,9 @@ if __name__ == "__main__":
         "USC00050848",  # Boulder
         "USC00055984",  # Northglenn
         "USC00058995",  # Wheat Ridge
-        "USW00023061"  # Alamosa
+        "USW00023061",  # Alamosa
+        "USC00054762",  # Lakewood
+        "USW00023062"   # Stapleton
     ]
 
     dotenv.load_dotenv()
