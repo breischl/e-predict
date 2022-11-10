@@ -14,12 +14,17 @@ Thus far I have:
  - Done some data analysis & plotting in a Jupyter notebook,  `data_exploration.ipynb`.
  - Created an initial prediction model in `decision_trees.ipynb`
 
-
 ## Data Sources
 I have identified three data sources that I believe will get me sufficient information.
 
 1. [EIA OpenData](https://www.eia.gov/opendata/) has electric demand data back to 2015, and provides daily updates
 2. [NOAA Weather](https://www.weather.gov/documentation/services-web-api) provides forecast data (including temp) but very limited historical data (only 7 days, and only on some endpoints)
 3. [NOAA's GHCN-d dataset](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) provides historical weather data. In particular, it can be [downloaded from here](https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/)
+
+# Side Projects from the Side Project
+`low_temp_history.ipynb` has some analysis on low temperatures in the Denver area that I was using to decide if I 
+can safely heat my house with just a heat pump.
+
+`hour_of_day_demand.ipynb` is just poking around at some daily electric usage patterns.
 
 

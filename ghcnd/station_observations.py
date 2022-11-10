@@ -49,16 +49,15 @@ class StationObservations:
 
 
 DEFAULT_MEASUREMENTS: set[str] = frozenset(["TMAX", "TMIN"])
-DEFAULT_START_DATE: date = date(2015, 1, 1)
 
 
-def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS, start_date: date = DEFAULT_START_DATE) -> StationObservations:
+def read_from_dly_file(dly_file_path: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS) -> StationObservations:
     """Parse StationObservations from a .dly text file"""
     with open(dly_file_path, "r", encoding="utf-8") as f:
-        return parse_from_dly_text(f.read(), desired_measurements, start_date)
+        return parse_from_dly_text(f.read(), desired_measurements)
 
 
-def parse_from_dly_text(dly_text: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS, start_date: date = DEFAULT_START_DATE) -> StationObservations:
+def parse_from_dly_text(dly_text: str, desired_measurements: set[str] = DEFAULT_MEASUREMENTS) -> StationObservations:
     """Parse StationObservations from a .dly text string
 
     The returned observations will be sorted in date order. Days with no valid observations will be trimmed from the end only.
@@ -78,9 +77,6 @@ def parse_from_dly_text(dly_text: str, desired_measurements: set[str] = DEFAULT_
 
         for (day_ord, observation_value) in enumerate(day_observations_values):
             dt = date(year, month, day_ord + 1)
-            if dt < start_date:
-                continue
-
             day_obs = observations.get(dt, StationDayObservations(dt, None, None))
 
             if elem == "TMAX":
