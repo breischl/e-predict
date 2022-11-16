@@ -3,8 +3,8 @@ The goal of this project is to develop an ML model capable of forecasting daily 
 Public Service Company of Colorado (PSCO, basically XCel Energy's footprint in Colorado) territory, based on the forecast daily temperatures. 
 
 ## Status
-In development. There is a random-forest-based prediction model created in the `decision_trees.ipynb` notebook, but the predictions are not great.
-Currently working on refining the model with more advanced techniques. 
+Messing around with prediction models. The existing models I have are not great (probably an ARIMA model would do better)
+but it's been a good learning experience. I expect to go investigate "the basics" a bit more and hopefully come back to this.
 
 Thus far I have:
  - identified data sources (see below)
@@ -13,6 +13,7 @@ Thus far I have:
  - written download and parsing code for the EIA OpenData historical electric demand data in the `eia` package.
  - Done some data analysis & plotting in a Jupyter notebook,  `data_exploration.ipynb`.
  - Created an initial prediction model in `decision_trees.ipynb`
+ - Created a neural net based model in `neural_net.ipynb`, though the accuracy is not great
 
 ## Data Sources
 I have identified three data sources that I believe will get me sufficient information.
